@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+cd $(dirname $0)
+base="${PWD}/.."
 
-base=${PWD}
+cd $base
 
 if [ ! -f flarum.json ]; then
 echo "Could not find flarum.json file!"
 exit 1
 fi
-
 
 extension=$(php <<CODE
 <?php
@@ -27,34 +28,12 @@ unzip release.zip -d ./
 rm release.zip
 
 # Delete files
-rm -rf ${release}/build.sh
+rm -rf ${release}/scripts
 
-# Install all Composer dependencies
-composer install --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-dev
-
-cd "${release}/js"
-if [ -f bower.json ]; then
-bower install
-fi
-
-for app in forum admin; do
-    cd "${release}/js"
-
-    if [ -d $app ]; then
-      cd $app
-
-      if [ -f bower.json ]; then
-        bower install
-      fi
-
-      npm install
-      gulp --production
-      rm -rf node_modules bower_components
-    fi
-done
-
-rm -rf "${release}/extensions/${extension}/js/bower_components"
+bash "${base}/scripts/compile.sh"
 wait
+
+rm -rf */node_modules */bower_components
 
 # Finally, create the release archive
 cd ${release}
