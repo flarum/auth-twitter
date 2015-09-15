@@ -1,0 +1,21 @@
+{
+    "name": "twitter",
+    "title": "Twitter",
+    "description": "Allow users to log in with Twitter.",
+    "keywords": [],
+    "version": "0.1.0-beta.2",
+    "author": {
+        "name": "Toby Zerner",
+        "email": "toby@flarum.org",
+        "homepage": "http://tobyzerner.com"
+    },
+    "license": "MIT",
+    "require": {
+        "flarum": ">0.1.0-beta.2"
+    },
+    "icon": {
+        "name": "twitter",
+        "backgroundColor": "#55ADEE",
+        "color": "#fff"
+    }
+}

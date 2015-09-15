@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Flarum\\Twitter\\": "src/"
+        }
+    },
+    "require": {
+        "league/oauth1-client": "^1.6"
+    }
+}
