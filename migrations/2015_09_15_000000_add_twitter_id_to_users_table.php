@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 
+namespace Flarum\Migrations\Twitter;
+
 use Illuminate\Database\Schema\Blueprint;
 use Flarum\Migrations\Migration;
 
