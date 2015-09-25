@@ -27,13 +27,13 @@ cd ${release}
 unzip release.zip -d ./
 rm release.zip
 
-# Delete files
-rm -rf ${release}/scripts
-
 bash "${base}/scripts/compile.sh"
 wait
 
-rm -rf */node_modules */bower_components
+# Delete files
+rm -rf ${release}/scripts
+rm -rf `find . -type d -name node_modules`
+rm -rf `find . -type d -name bower_components`
 
 # Finally, create the release archive
 cd ${release}
