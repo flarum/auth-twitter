@@ -8,18 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Flarum\Migrations\Twitter;
+namespace Flarum\Auth\Twitter\Migration;
 
+use Flarum\Database\AbstractMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Flarum\Migrations\Migration;
 
-class AddTwitterIdToUsersTable extends Migration
+class AddTwitterIdToUsersTable extends AbstractMigration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         $this->schema->table('users', function (Blueprint $table) {
@@ -27,11 +22,6 @@ class AddTwitterIdToUsersTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         $this->schema->table('users', function (Blueprint $table) {

@@ -1,7 +1,7 @@
 import app from 'flarum/app';
 
-import TwitterSettingsModal from 'twitter/components/TwitterSettingsModal';
+import TwitterSettingsModal from 'flarum/auth/twitter/components/TwitterSettingsModal';
 
-app.initializers.add('twitter', () => {
-  app.extensionSettings.twitter = () => app.modal.show(new TwitterSettingsModal());
+app.initializers.add('flarum-auth-twitter', () => {
+  app.extensionSettings['flarum-auth-twitter'] = () => app.modal.show(new TwitterSettingsModal());
 });

@@ -13,12 +13,12 @@ export default class TwitterSettingsModal extends SettingsModal {
     return [
       <div className="Form-group">
         <label>API Key</label>
-        <input className="FormControl" bidi={this.setting('twitter.api_key')}/>
+        <input className="FormControl" bidi={this.setting('flarum-auth-twitter.api_key')}/>
       </div>,
 
       <div className="Form-group">
         <label>API Secret</label>
-        <input className="FormControl" bidi={this.setting('twitter.api_secret')}/>
+        <input className="FormControl" bidi={this.setting('flarum-auth-twitter.api_secret')}/>
       </div>
     ];
   }
