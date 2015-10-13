@@ -25,7 +25,7 @@
     },
     "extra": {
         "flarum-extension": {
-            "title": "Twitter",
+            "title": "Twitter Login",
             "icon": {
                 "name": "twitter",
                 "backgroundColor": "#55ADEE",
