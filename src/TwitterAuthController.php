@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Flarum\Auth\GitHub;
+namespace Flarum\Auth\Twitter;
 
 use Flarum\Forum\Controller\AuthenticateUserTrait;
 use Flarum\Forum\UrlGenerator;
@@ -19,7 +19,7 @@ use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Zend\Diactoros\Response\RedirectResponse;
 
-class GitHubAuthController implements ControllerInterface
+class TwitterAuthController implements ControllerInterface
 {
     use AuthenticateUserTrait;
 
