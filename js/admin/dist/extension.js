@@ -1,23 +1,4 @@
-System.register('flarum/auth/twitter/main', ['flarum/app', 'flarum/auth/twitter/components/TwitterSettingsModal'], function (_export) {
-  'use strict';
-
-  var app, TwitterSettingsModal;
-  return {
-    setters: [function (_flarumApp) {
-      app = _flarumApp['default'];
-    }, function (_flarumAuthTwitterComponentsTwitterSettingsModal) {
-      TwitterSettingsModal = _flarumAuthTwitterComponentsTwitterSettingsModal['default'];
-    }],
-    execute: function () {
-
-      app.initializers.add('flarum-auth-twitter', function () {
-        app.extensionSettings['flarum-auth-twitter'] = function () {
-          return app.modal.show(new TwitterSettingsModal());
-        };
-      });
-    }
-  };
-});;System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
+System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
   'use strict';
 
   var SettingsModal, TwitterSettingsModal;
@@ -72,6 +53,26 @@ System.register('flarum/auth/twitter/main', ['flarum/app', 'flarum/auth/twitter/
       })(SettingsModal);
 
       _export('default', TwitterSettingsModal);
+    }
+  };
+});;
+System.register('flarum/auth/twitter/main', ['flarum/app', 'flarum/auth/twitter/components/TwitterSettingsModal'], function (_export) {
+  'use strict';
+
+  var app, TwitterSettingsModal;
+  return {
+    setters: [function (_flarumApp) {
+      app = _flarumApp['default'];
+    }, function (_flarumAuthTwitterComponentsTwitterSettingsModal) {
+      TwitterSettingsModal = _flarumAuthTwitterComponentsTwitterSettingsModal['default'];
+    }],
+    execute: function () {
+
+      app.initializers.add('flarum-auth-twitter', function () {
+        app.extensionSettings['flarum-auth-twitter'] = function () {
+          return app.modal.show(new TwitterSettingsModal());
+        };
+      });
     }
   };
 });
