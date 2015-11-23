@@ -82,7 +82,10 @@ class TwitterAuthController implements ControllerInterface
 
         return $this->authenticate(
             ['twitter_id' => $user->uid],
-            ['username' => $user->nickname]
+            [
+                'username' => $user->nickname,
+                'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
+            ]
         );
     }
 }
