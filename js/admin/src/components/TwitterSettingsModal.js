@@ -6,18 +6,18 @@ export default class TwitterSettingsModal extends SettingsModal {
   }
 
   title() {
-    return 'Twitter Settings';
+    return app.translator.trans('flarum-auth-twitter.admin.twitter_settings.title');
   }
 
   form() {
     return [
       <div className="Form-group">
-        <label>API Key</label>
+        <label>{app.translator.trans('flarum-auth-twitter.admin.twitter_settings.api_key_label')}</label>
         <input className="FormControl" bidi={this.setting('flarum-auth-twitter.api_key')}/>
       </div>,
 
       <div className="Form-group">
-        <label>API Secret</label>
+        <label>{app.translator.trans('flarum-auth-twitter.admin.twitter_settings.api_secret_label')}</label>
         <input className="FormControl" bidi={this.setting('flarum-auth-twitter.api_secret')}/>
       </div>
     ];

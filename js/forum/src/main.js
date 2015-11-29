@@ -10,7 +10,7 @@ app.initializers.add('flarum-auth-twitter', () => {
         className="Button LogInButton--twitter"
         icon="twitter"
         path="/auth/twitter">
-        Log in with Twitter
+        {app.translator.trans('flarum-auth-twitter.forum.log_in.with_twitter_button')}
       </LogInButton>
     );
   });
