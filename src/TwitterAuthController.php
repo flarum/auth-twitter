@@ -81,6 +81,7 @@ class TwitterAuthController implements ControllerInterface
         $user = $server->getUserDetails($tokenCredentials);
 
         return $this->authenticate(
+            $request,
             ['twitter_id' => $user->uid],
             [
                 'username' => $user->nickname,
