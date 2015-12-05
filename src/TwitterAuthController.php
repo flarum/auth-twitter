@@ -10,8 +10,7 @@
 
 namespace Flarum\Auth\Twitter;
 
-use Flarum\Forum\Controller\AuthenticateUserTrait;
-use Flarum\Forum\UrlGenerator;
+use Flarum\Forum\AuthenticationResponseFactory;
 use Flarum\Http\Controller\ControllerInterface;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -21,7 +20,10 @@ use Zend\Diactoros\Response\RedirectResponse;
 
 class TwitterAuthController implements ControllerInterface
 {
-    use AuthenticateUserTrait;
+    /**
+     * @var AuthenticationResponseFactory
+     */
+    protected $authResponse;
 
     /**
      * @var SettingsRepositoryInterface
@@ -29,42 +31,40 @@ class TwitterAuthController implements ControllerInterface
     protected $settings;
 
     /**
-     * @var UrlGenerator
-     */
-    protected $url;
-
-    /**
+     * @param AuthenticationResponseFactory $authResponse
      * @param SettingsRepositoryInterface $settings
-     * @param UrlGenerator $url
-     * @param Dispatcher $bus
      */
-    public function __construct(SettingsRepositoryInterface $settings, UrlGenerator $url, Dispatcher $bus)
+    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
     {
+        $this->authResponse = $authResponse;
         $this->settings = $settings;
-        $this->url = $url;
-        $this->bus = $bus;
     }
 
     /**
      * @param Request $request
-     * @param array $routeParams
      * @return \Psr\Http\Message\ResponseInterface|RedirectResponse
      */
-    public function handle(Request $request, array $routeParams = [])
+    public function handle(Request $request)
     {
-        session_start();
+        $redirectUri = (string) $request->getUri()->withQuery('');
 
         $server = new Twitter(array(
             'identifier'   => $this->settings->get('flarum-auth-twitter.api_key'),
             'secret'       => $this->settings->get('flarum-auth-twitter.api_secret'),
-            'callback_uri' => $this->url->toRoute('auth.twitter')
+            'callback_uri' => $redirectUri
         ));
 
-        if (! isset($_GET['oauth_token']) || ! isset($_GET['oauth_verifier'])) {
+        $session = $request->getAttribute('session');
+
+        $queryParams = $request->getQueryParams();
+        $oAuthToken = array_get($queryParams, 'oauth_token');
+        $oAuthVerifier = array_get($queryParams, 'oauth_verifier');
+
+        if (! $oAuthToken || ! $oAuthVerifier) {
             $temporaryCredentials = $server->getTemporaryCredentials();
 
-            $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
-            session_write_close();
+            $session->set('temporary_credentials', serialize($temporaryCredentials));
+            $session->save();
 
             // Second part of OAuth 1.0 authentication is to redirect the
             // resource owner to the login screen on the server.
@@ -73,20 +73,19 @@ class TwitterAuthController implements ControllerInterface
         }
 
         // Retrieve the temporary credentials we saved before
-        $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+        $temporaryCredentials = unserialize($session->get('temporary_credentials'));
 
         // We will now retrieve token credentials from the server
-        $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
+        $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $oAuthToken, $oAuthVerifier);
 
         $user = $server->getUserDetails($tokenCredentials);
 
-        return $this->authenticate(
-            $request,
-            ['twitter_id' => $user->uid],
-            [
-                'username' => $user->nickname,
-                'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
-            ]
-        );
+        $identification = ['twitter_id' => $user->uid];
+        $suggestions = [
+            'username' => $user->nickname,
+            'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
+        ];
+
+        return $this->authResponse->make($request, $identification, $suggestions);
     }
 }
