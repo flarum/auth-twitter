@@ -23,7 +23,7 @@ System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/
         }, {
           key: 'title',
           value: function title() {
-            return 'Twitter Settings';
+            return app.translator.trans('flarum-auth-twitter.admin.twitter_settings.title');
           }
         }, {
           key: 'form',
@@ -34,7 +34,7 @@ System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/
               m(
                 'label',
                 null,
-                'API Key'
+                app.translator.trans('flarum-auth-twitter.admin.twitter_settings.api_key_label')
               ),
               m('input', { className: 'FormControl', bidi: this.setting('flarum-auth-twitter.api_key') })
             ), m(
@@ -43,7 +43,7 @@ System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/
               m(
                 'label',
                 null,
-                'API Secret'
+                app.translator.trans('flarum-auth-twitter.admin.twitter_settings.api_secret_label')
               ),
               m('input', { className: 'FormControl', bidi: this.setting('flarum-auth-twitter.api_secret') })
             )];
