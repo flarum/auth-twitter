@@ -46,7 +46,7 @@ class TwitterAuthController implements ControllerInterface
      */
     public function handle(Request $request)
     {
-        $redirectUri = (string) $request->getUri()->withQuery('');
+        $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
         $server = new Twitter(array(
             'identifier'   => $this->settings->get('flarum-auth-twitter.api_key'),
