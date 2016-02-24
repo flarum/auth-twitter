@@ -8,24 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Flarum\Auth\Twitter\Migration;
-
-use Flarum\Database\AbstractMigration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
-class AddTwitterIdToUsersTable extends AbstractMigration
-{
-    public function up()
-    {
-        $this->schema->table('users', function (Blueprint $table) {
+return [
+    'up' => function (Builder $schema) {
+        $schema->table('users', function (Blueprint $table) {
             $table->string('twitter_id')->nullable();
         });
-    }
+    },
 
-    public function down()
-    {
-        $this->schema->table('users', function (Blueprint $table) {
+    'down' => function (Builder $schema) {
+        $schema->table('users', function (Blueprint $table) {
             $table->dropColumn('twitter_id');
         });
     }
-}
+];
