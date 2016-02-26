@@ -13,7 +13,6 @@ namespace Flarum\Auth\Twitter;
 use Flarum\Forum\AuthenticationResponseFactory;
 use Flarum\Http\Controller\ControllerInterface;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Illuminate\Contracts\Bus\Dispatcher;
 use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Zend\Diactoros\Response\RedirectResponse;
@@ -48,11 +47,11 @@ class TwitterAuthController implements ControllerInterface
     {
         $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
-        $server = new Twitter(array(
+        $server = new Twitter([
             'identifier'   => $this->settings->get('flarum-auth-twitter.api_key'),
             'secret'       => $this->settings->get('flarum-auth-twitter.api_secret'),
             'callback_uri' => $redirectUri
-        ));
+        ]);
 
         $session = $request->getAttribute('session');
 
