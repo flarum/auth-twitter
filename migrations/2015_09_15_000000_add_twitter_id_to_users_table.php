@@ -8,19 +8,8 @@
  * file that was distributed with this source code.
  */
 
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
+use Flarum\Database\Migration;
 
-return [
-    'up' => function (Builder $schema) {
-        $schema->table('users', function (Blueprint $table) {
-            $table->string('twitter_id')->nullable();
-        });
-    },
-
-    'down' => function (Builder $schema) {
-        $schema->table('users', function (Blueprint $table) {
-            $table->dropColumn('twitter_id');
-        });
-    }
-];
+return Migration::addColumns('users', [
+    'twitter_id' => ['string', 'length' => 255, 'nullable' => true]
+]);
