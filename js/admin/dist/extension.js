@@ -1,18 +1,18 @@
-System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
-  'use strict';
+'use strict';
 
+System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/components/SettingsModal'], function (_export, _context) {
   var SettingsModal, TwitterSettingsModal;
   return {
     setters: [function (_flarumComponentsSettingsModal) {
-      SettingsModal = _flarumComponentsSettingsModal['default'];
+      SettingsModal = _flarumComponentsSettingsModal.default;
     }],
     execute: function () {
-      TwitterSettingsModal = (function (_SettingsModal) {
+      TwitterSettingsModal = function (_SettingsModal) {
         babelHelpers.inherits(TwitterSettingsModal, _SettingsModal);
 
         function TwitterSettingsModal() {
           babelHelpers.classCallCheck(this, TwitterSettingsModal);
-          babelHelpers.get(Object.getPrototypeOf(TwitterSettingsModal.prototype), 'constructor', this).apply(this, arguments);
+          return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(TwitterSettingsModal).apply(this, arguments));
         }
 
         babelHelpers.createClass(TwitterSettingsModal, [{
@@ -50,21 +50,21 @@ System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/
           }
         }]);
         return TwitterSettingsModal;
-      })(SettingsModal);
+      }(SettingsModal);
 
       _export('default', TwitterSettingsModal);
     }
   };
 });;
-System.register('flarum/auth/twitter/main', ['flarum/app', 'flarum/auth/twitter/components/TwitterSettingsModal'], function (_export) {
-  'use strict';
+'use strict';
 
+System.register('flarum/auth/twitter/main', ['flarum/app', 'flarum/auth/twitter/components/TwitterSettingsModal'], function (_export, _context) {
   var app, TwitterSettingsModal;
   return {
     setters: [function (_flarumApp) {
-      app = _flarumApp['default'];
+      app = _flarumApp.default;
     }, function (_flarumAuthTwitterComponentsTwitterSettingsModal) {
-      TwitterSettingsModal = _flarumAuthTwitterComponentsTwitterSettingsModal['default'];
+      TwitterSettingsModal = _flarumAuthTwitterComponentsTwitterSettingsModal.default;
     }],
     execute: function () {
 
