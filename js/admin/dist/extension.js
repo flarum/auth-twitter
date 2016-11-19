@@ -14,7 +14,7 @@ System.register('flarum/auth/twitter/components/TwitterSettingsModal', ['flarum/
 
         function TwitterSettingsModal() {
           babelHelpers.classCallCheck(this, TwitterSettingsModal);
-          return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(TwitterSettingsModal).apply(this, arguments));
+          return babelHelpers.possibleConstructorReturn(this, (TwitterSettingsModal.__proto__ || Object.getPrototypeOf(TwitterSettingsModal)).apply(this, arguments));
         }
 
         babelHelpers.createClass(TwitterSettingsModal, [{
