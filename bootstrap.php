@@ -9,10 +9,18 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Auth\Twitter\Listener;
-use Illuminate\Contracts\Events\Dispatcher;
+use Flarum\Auth\Twitter\TwitterAuthController;
+use Flarum\Extend;
 
-return function (Dispatcher $events) {
-    $events->subscribe(Listener\AddClientAssets::class);
-    $events->subscribe(Listener\AddTwitterAuthRoute::class);
-};
+return [
+    (new Extend\Assets('forum'))
+        ->defaultAssets(__DIR__)
+        ->bootstrapper('flarum/auth/twitter/main'),
+    (new Extend\Assets('admin'))
+        ->asset(__DIR__.'/js/admin/dist/extension.js')
+        ->bootstrapper('flarum/auth/twitter/main'),
+    new Extend\Route(
+        'forum', 'auth.twitter',
+        'get', '/auth/twitter', TwitterAuthController::class
+    )
+];
