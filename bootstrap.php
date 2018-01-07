@@ -19,8 +19,6 @@ return [
     (new Extend\Assets('admin'))
         ->asset(__DIR__.'/js/admin/dist/extension.js')
         ->bootstrapper('flarum/auth/twitter/main'),
-    new Extend\Route(
-        'forum', 'auth.twitter',
-        'get', '/auth/twitter', TwitterAuthController::class
-    )
+    (new Extend\Routes('forum'))
+        ->get('/auth/twitter', 'auth.twitter', TwitterAuthController::class),
 ];
