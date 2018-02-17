@@ -8,7 +8,7 @@ app.initializers.add('flarum-auth-twitter', () => {
     items.add('twitter',
       <LogInButton
         className="Button LogInButton--twitter"
-        icon="twitter"
+        icon="fab fa-twitter"
         path="/auth/twitter">
         {app.translator.trans('flarum-auth-twitter.forum.log_in.with_twitter_button')}
       </LogInButton>
