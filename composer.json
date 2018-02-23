@@ -30,7 +30,7 @@
         "flarum-extension": {
             "title": "Twitter Login",
             "icon": {
-                "name": "twitter",
+                "name": "fab fa-twitter",
                 "backgroundColor": "#55ADEE",
                 "color": "#fff"
             }
