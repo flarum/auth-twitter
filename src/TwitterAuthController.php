@@ -63,7 +63,7 @@ class TwitterAuthController implements ControllerInterface
         if (! $oAuthToken || ! $oAuthVerifier) {
             $temporaryCredentials = $server->getTemporaryCredentials();
 
-            $session->set('temporary_credentials', serialize($temporaryCredentials));
+            $session->put('temporary_credentials', serialize($temporaryCredentials));
             $session->save();
 
             // Second part of OAuth 1.0 authentication is to redirect the
