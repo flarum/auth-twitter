@@ -12,13 +12,13 @@
 namespace Flarum\Auth\Twitter;
 
 use Flarum\Forum\AuthenticationResponseFactory;
-use Flarum\Http\Controller\ControllerInterface;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth1\Client\Server\Twitter;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Zend\Diactoros\Response\RedirectResponse;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class TwitterAuthController implements ControllerInterface
+class TwitterAuthController implements RequestHandlerInterface
 {
     /**
      * @var AuthenticationResponseFactory
@@ -42,9 +42,9 @@ class TwitterAuthController implements ControllerInterface
 
     /**
      * @param Request $request
-     * @return \Psr\Http\Message\ResponseInterface|RedirectResponse
+     * @return ResponseInterface
      */
-    public function handle(Request $request)
+    public function handle(Request $request): ResponseInterface
     {
         $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
