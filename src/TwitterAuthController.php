@@ -80,12 +80,16 @@ class TwitterAuthController implements RequestHandlerInterface
 
         $user = $server->getUserDetails($tokenCredentials);
 
-        $identification = ['twitter_id' => $user->uid];
-        $suggestions = [
-            'username' => $user->nickname,
-            'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
-        ];
-
-        return $this->authResponse->make($request, $identification, $suggestions);
+        return $this->authResponse->make([
+            'identification' => [
+                'twitter_id' => $user->uid
+            ],
+            'attributes' => [
+                'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
+            ],
+            'suggestions' => [
+                'username' => $user->nickname
+            ]
+        ]);
     }
 }
