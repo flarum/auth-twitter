@@ -17,6 +17,7 @@ use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Diactoros\Response\RedirectResponse;
 
 class TwitterAuthController implements RequestHandlerInterface
 {
@@ -49,8 +50,8 @@ class TwitterAuthController implements RequestHandlerInterface
         $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
         $server = new Twitter([
-            'identifier'   => $this->settings->get('flarum-auth-twitter.api_key'),
-            'secret'       => $this->settings->get('flarum-auth-twitter.api_secret'),
+            'identifier' => $this->settings->get('flarum-auth-twitter.api_key'),
+            'secret' => $this->settings->get('flarum-auth-twitter.api_secret'),
             'callback_uri' => $redirectUri
         ]);
 
@@ -64,18 +65,14 @@ class TwitterAuthController implements RequestHandlerInterface
             $temporaryCredentials = $server->getTemporaryCredentials();
 
             $session->put('temporary_credentials', serialize($temporaryCredentials));
-            $session->save();
 
-            // Second part of OAuth 1.0 authentication is to redirect the
-            // resource owner to the login screen on the server.
-            $server->authorize($temporaryCredentials);
-            exit;
+            $authUrl = $server->getAuthorizationUrl($temporaryCredentials);
+
+            return new RedirectResponse($authUrl);
         }
 
-        // Retrieve the temporary credentials we saved before
         $temporaryCredentials = unserialize($session->get('temporary_credentials'));
 
-        // We will now retrieve token credentials from the server
         $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $oAuthToken, $oAuthVerifier);
 
         $user = $server->getUserDetails($tokenCredentials);
