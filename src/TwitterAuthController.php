@@ -11,7 +11,8 @@
 
 namespace Flarum\Auth\Twitter;
 
-use Flarum\Forum\AuthenticationResponseFactory;
+use Flarum\Forum\Auth\Registration;
+use Flarum\Forum\Auth\ResponseFactory;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ResponseInterface;
@@ -22,9 +23,9 @@ use Zend\Diactoros\Response\RedirectResponse;
 class TwitterAuthController implements RequestHandlerInterface
 {
     /**
-     * @var AuthenticationResponseFactory
+     * @var ResponseFactory
      */
-    protected $authResponse;
+    protected $response;
 
     /**
      * @var SettingsRepositoryInterface
@@ -32,12 +33,12 @@ class TwitterAuthController implements RequestHandlerInterface
     protected $settings;
 
     /**
-     * @param AuthenticationResponseFactory $authResponse
+     * @param ResponseFactory $response
      * @param SettingsRepositoryInterface $settings
      */
-    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
     {
-        $this->authResponse = $authResponse;
+        $this->response = $response;
         $this->settings = $settings;
     }
 
@@ -77,16 +78,15 @@ class TwitterAuthController implements RequestHandlerInterface
 
         $user = $server->getUserDetails($tokenCredentials);
 
-        return $this->authResponse->make([
-            'identification' => [
-                'twitter_id' => $user->uid
-            ],
-            'attributes' => [
-                'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
-            ],
-            'suggestions' => [
-                'username' => $user->nickname
-            ]
-        ]);
+        return $this->response->make(
+            'twitter', $user->uid,
+            function (Registration $registration) use ($user) {
+                $registration
+                    ->provideTrustedEmail($user->email)
+                    ->provideAvatar(str_replace('_normal', '', $user->imageUrl))
+                    ->suggestUsername($user->nickname)
+                    ->setPayload(get_object_vars($user));
+            }
+        );
     }
 }
