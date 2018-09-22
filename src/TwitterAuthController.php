@@ -11,19 +11,21 @@
 
 namespace Flarum\Auth\Twitter;
 
-use Flarum\Forum\AuthenticationResponseFactory;
+use Flarum\Forum\Auth\Registration;
+use Flarum\Forum\Auth\ResponseFactory;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Diactoros\Response\RedirectResponse;
 
 class TwitterAuthController implements RequestHandlerInterface
 {
     /**
-     * @var AuthenticationResponseFactory
+     * @var ResponseFactory
      */
-    protected $authResponse;
+    protected $response;
 
     /**
      * @var SettingsRepositoryInterface
@@ -31,12 +33,12 @@ class TwitterAuthController implements RequestHandlerInterface
     protected $settings;
 
     /**
-     * @param AuthenticationResponseFactory $authResponse
+     * @param ResponseFactory $response
      * @param SettingsRepositoryInterface $settings
      */
-    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
     {
-        $this->authResponse = $authResponse;
+        $this->response = $response;
         $this->settings = $settings;
     }
 
@@ -49,8 +51,8 @@ class TwitterAuthController implements RequestHandlerInterface
         $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
         $server = new Twitter([
-            'identifier'   => $this->settings->get('flarum-auth-twitter.api_key'),
-            'secret'       => $this->settings->get('flarum-auth-twitter.api_secret'),
+            'identifier' => $this->settings->get('flarum-auth-twitter.api_key'),
+            'secret' => $this->settings->get('flarum-auth-twitter.api_secret'),
             'callback_uri' => $redirectUri
         ]);
 
@@ -64,28 +66,27 @@ class TwitterAuthController implements RequestHandlerInterface
             $temporaryCredentials = $server->getTemporaryCredentials();
 
             $session->put('temporary_credentials', serialize($temporaryCredentials));
-            $session->save();
 
-            // Second part of OAuth 1.0 authentication is to redirect the
-            // resource owner to the login screen on the server.
-            $server->authorize($temporaryCredentials);
-            exit;
+            $authUrl = $server->getAuthorizationUrl($temporaryCredentials);
+
+            return new RedirectResponse($authUrl);
         }
 
-        // Retrieve the temporary credentials we saved before
         $temporaryCredentials = unserialize($session->get('temporary_credentials'));
 
-        // We will now retrieve token credentials from the server
         $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $oAuthToken, $oAuthVerifier);
 
         $user = $server->getUserDetails($tokenCredentials);
 
-        $identification = ['twitter_id' => $user->uid];
-        $suggestions = [
-            'username' => $user->nickname,
-            'avatarUrl' => str_replace('_normal', '', $user->imageUrl)
-        ];
-
-        return $this->authResponse->make($request, $identification, $suggestions);
+        return $this->response->make(
+            'twitter', $user->uid,
+            function (Registration $registration) use ($user) {
+                $registration
+                    ->provideTrustedEmail($user->email)
+                    ->provideAvatar(str_replace('_normal', '', $user->imageUrl))
+                    ->suggestUsername($user->nickname)
+                    ->setPayload(get_object_vars($user));
+            }
+        );
     }
 }
