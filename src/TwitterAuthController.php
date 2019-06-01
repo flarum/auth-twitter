@@ -13,6 +13,7 @@ namespace Flarum\Auth\Twitter;
 
 use Flarum\Forum\Auth\Registration;
 use Flarum\Forum\Auth\ResponseFactory;
+use Flarum\Http\UrlGenerator;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ResponseInterface;
@@ -33,13 +34,20 @@ class TwitterAuthController implements RequestHandlerInterface
     protected $settings;
 
     /**
+     * @var UrlGenerator
+     */
+    protected $url;
+
+    /**
      * @param ResponseFactory $response
      * @param SettingsRepositoryInterface $settings
+     * @param UrlGenerator $url
      */
-    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings, UrlGenerator $url)
     {
         $this->response = $response;
         $this->settings = $settings;
+        $this->url = $url;
     }
 
     /**
@@ -48,7 +56,7 @@ class TwitterAuthController implements RequestHandlerInterface
      */
     public function handle(Request $request): ResponseInterface
     {
-        $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
+        $redirectUri = $this->url->to('forum')->route('auth.twitter');
 
         $server = new Twitter([
             'identifier' => $this->settings->get('flarum-auth-twitter.api_key'),
