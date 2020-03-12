@@ -9,27 +9,27 @@
 
 namespace Flarum\Auth\Twitter;
 
-use Flarum\Forum\Auth\Registration;
-use Flarum\Forum\Auth\ResponseFactory;
+use Flarum\Forum\Auth\SsoDriverInterface;
+use Flarum\Forum\Auth\SsoResponse;
 use Flarum\Http\UrlGenerator;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Laminas\Diactoros\Response\RedirectResponse;
 use League\OAuth1\Client\Server\Twitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
-class TwitterAuthController implements RequestHandlerInterface
+class TwitterAuthDriver implements SsoDriverInterface
 {
-    /**
-     * @var ResponseFactory
-     */
-    protected $response;
-
     /**
      * @var SettingsRepositoryInterface
      */
     protected $settings;
+
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * @var UrlGenerator
@@ -37,29 +37,41 @@ class TwitterAuthController implements RequestHandlerInterface
     protected $url;
 
     /**
-     * @param ResponseFactory $response
      * @param SettingsRepositoryInterface $settings
+     * @param TranslatorInterface $translator
      * @param UrlGenerator $url
      */
-    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings, UrlGenerator $url)
+    public function __construct(SettingsRepositoryInterface $settings, TranslatorInterface $translator, UrlGenerator $url)
     {
-        $this->response = $response;
         $this->settings = $settings;
+        $this->translator = $translator;
         $this->url = $url;
+    }
+
+    public function meta(): array
+    {
+        return [
+            "name" => "Twitter",
+            "icon" => "fab fa-twitter",
+            "buttonColor" => "#55ADEE",
+            "buttonText" => $this->translator->trans('flarum-auth-twitter.forum.log_in.with_twitter_button'),
+            "buttonTextColor" => "#fff",
+        ];
     }
 
     /**
      * @param Request $request
      * @return ResponseInterface
      */
-    public function handle(Request $request): ResponseInterface
+    public function sso(Request $request, SsoResponse $ssoResponse)
     {
-        $redirectUri = $this->url->to('forum')->route('auth.twitter');
+        $redirectUri = $this->url->to('forum')->route('sso', ['driver' => 'twitter']);
 
         $server = new Twitter([
             'identifier' => $this->settings->get('flarum-auth-twitter.api_key'),
             'secret' => $this->settings->get('flarum-auth-twitter.api_secret'),
-            'callback_uri' => $redirectUri
+            'callback_uri' => $redirectUri,
+            'isSecure' => false,
         ]);
 
         $session = $request->getAttribute('session');
@@ -84,15 +96,11 @@ class TwitterAuthController implements RequestHandlerInterface
 
         $user = $server->getUserDetails($tokenCredentials);
 
-        return $this->response->make(
-            'twitter', $user->uid,
-            function (Registration $registration) use ($user) {
-                $registration
-                    ->provideTrustedEmail($user->email)
-                    ->provideAvatar(str_replace('_normal', '', $user->imageUrl))
-                    ->suggestUsername($user->nickname)
-                    ->setPayload(get_object_vars($user));
-            }
-        );
+        return $ssoResponse
+            ->withIdentifier($user->uid)
+            ->provideTrustedEmail($user->email)
+            ->provideAvatar(str_replace('_normal', '', $user->imageUrl))
+            ->suggestUsername($user->nickname)
+            ->setPayload(get_object_vars($user));
     }
 }
