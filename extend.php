@@ -15,5 +15,5 @@ return [
         ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Auth)
-        ->addAuthDriver('twitter', TwitterAuthDriver::class),
+        ->ssoDriver('twitter', TwitterAuthDriver::class),
 ];

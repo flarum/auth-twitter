@@ -65,7 +65,7 @@ class TwitterAuthDriver implements SsoDriverInterface
      */
     public function sso(Request $request, SsoResponse $ssoResponse)
     {
-        $redirectUri = $this->url->to('forum')->route('sso', ['driver' => 'twitter']);
+        $redirectUri = $this->url->to('forum')->route('sso', ['provider' => 'twitter']);
 
         $server = new Twitter([
             'identifier' => $this->settings->get('flarum-auth-twitter.api_key'),
